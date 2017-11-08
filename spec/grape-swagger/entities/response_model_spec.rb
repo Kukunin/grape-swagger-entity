@@ -113,6 +113,10 @@ describe 'building definitions from given entities' do
               expose :level_2, documentation: { type: 'String', desc: 'Level 2' }
             end
           end
+          expose :nested_required do
+            expose :some1, documentation: { required: true, desc: 'Required some 1' }
+            expose :some2, documentation: { desc: 'Optional some 2' }
+          end
 
           expose :nested_array, documentation: { type: 'Array', desc: 'Nested array' } do
             expose :id, documentation: { type: 'Integer', desc: 'Collection element id' }
@@ -206,6 +210,14 @@ describe 'building definitions from given entities' do
             }
           },
           'description' => 'Deep nested entity'
+        },
+        'nested_required' => {
+          'type' => 'object',
+          'properties' => {
+            'some1' => { 'type' => 'string', 'description' => 'Required some 1' },
+            'some2' => { 'type' => 'string', 'description' => 'Optional some 2' }
+          },
+          'required' => ['some1']
         },
         'nested_array' => {
           'type' => 'array',

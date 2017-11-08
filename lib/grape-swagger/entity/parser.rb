@@ -55,6 +55,8 @@ module GrapeSwagger
           memo[value.attribute] = value.send(:options)
         end
 
+        required = required_params(params)
+
         properties = parse_grape_entity_params(params, nested_entity)
         is_a_collection = entity_options[:documentation].is_a?(Hash) &&
                           entity_options[:documentation][:type].to_s.casecmp('array').zero?
@@ -62,17 +64,27 @@ module GrapeSwagger
         if is_a_collection
           {
             type: :array,
-            items: {
+            items: with_required({
               type: :object,
               properties: properties
-            }
+            }, required)
           }
         else
-          {
+          with_required({
             type: :object,
             properties: properties
-          }
+          }, required)
         end
+      end
+
+      def required_params(params)
+        params.select { |_, options| options.dig(:documentation, :required) }.map(&:first)
+      end
+
+      def with_required(hash, required)
+        return hash if required.empty?
+        hash[:required] = required
+        hash
       end
     end
   end
